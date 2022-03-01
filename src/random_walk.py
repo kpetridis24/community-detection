@@ -26,24 +26,14 @@ def clusters(G, steps, desired_similarity):
         community = random_walk(steps, node, G)
         communities[node] = community
 
-    C = list(set())
-    for i in G.nodes:
-        for j in G.nodes:
-            if i < j:
-                score = tools.jaccard_similarity(communities[i], communities[j])
-                if score >= desired_similarity:
-                    cluster = tools.check_clusters(i, j, C)
-                    if cluster == -1:
-                        C.append({i, j})
-                        continue
-                    C[cluster].add(j)
-    return C
+    communities = tools.join_node_clusters(desired_similarity, communities, G)
+    return communities
 
 
 def main():
     steps = 50
     desired_similarity = 0.03
-    G = reader.create_graph('g1.csv', True)
+    G = reader.create_graph('../graphs/g1.csv', True)
 
     start = time.time()
     modules = clusters(G, steps, desired_similarity)

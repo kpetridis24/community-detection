@@ -5,6 +5,7 @@ import random
 import time
 import inc.reader as reader
 import inc.tools as tools
+import graphs as graphs
 from random import seed
 from datetime import datetime
 seed(datetime.now())
@@ -36,18 +37,8 @@ def clusters(G, steps, window, tolerance, desired_similarity):
         community = restrained_walk(steps, window, tolerance, node, G)
         communities[node] = community
 
-    C = list(set())
-    for i in G.nodes:
-        for j in G.nodes:
-            if i < j:
-                score = tools.jaccard_similarity(communities[i], communities[j])
-                if score >= desired_similarity:
-                    cluster = tools.check_clusters(i, j, C)
-                    if cluster == -1:
-                        C.append({i, j})
-                        continue
-                    C[cluster].add(j)
-    return C
+    communities = tools.join_node_clusters(desired_similarity, communities, G)
+    return communities
 
 
 def main():
@@ -55,7 +46,7 @@ def main():
     window = 6
     tolerance = 5
     desired_similarity = 0.03
-    G = reader.create_graph('g1.csv', True)
+    G = reader.create_graph('../graphs/g1.csv', True)
 
     start = time.time()
     modules = clusters(G, steps, window, tolerance, desired_similarity)

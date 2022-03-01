@@ -1,5 +1,6 @@
 import csv
 import networkx as nx
+import numpy as np
 
 
 def get_nodes_edges_txt(file):
