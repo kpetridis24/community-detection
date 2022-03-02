@@ -31,32 +31,38 @@ def restrained_walk(steps, window, tolerance, vertex, G):
     return community
 
 
-def clusters(G, steps, window, tolerance, desired_similarity):
-    communities = dict()
+def clusters(G, steps, window, tolerance, threshold_similarity):
+    communities = list()
     for node in G.nodes:
         community = restrained_walk(steps, window, tolerance, node, G)
-        communities[node] = community
+        communities.append(community)
 
-    communities = tools.join_node_clusters(desired_similarity, communities, G)
-    return communities
+    modules = tools.join_similar_communities(threshold_similarity, communities, G)
+    index1, index2 = tools.similar_clusters(threshold_similarity, modules)
+
+    while index1 != -1:
+        modules[index1] = modules[index1].union(modules[index2])
+        modules.pop(index2)
+        index1, index2 = tools.similar_clusters(threshold_similarity, modules)
+
+    return modules
 
 
 def main():
-    steps = 50
+    steps = 10
     window = 6
     tolerance = 5
-    desired_similarity = 0.03
+    threshold_similarity = 0.1
     G = reader.create_graph('../graphs/g1.csv', True)
 
     start = time.time()
-    modules = clusters(G, steps, window, tolerance, desired_similarity)
+    modules = clusters(G, steps, window, tolerance, threshold_similarity)
     end = time.time()
 
     print('Nodes: ', G.number_of_nodes())
     print('Edges: ', G.number_of_edges())
     print('Clustering time: ', end - start)
     print('Number of clusters: ', len(modules))
-
     # nx.write_gexf(G, 'test.gexf')
 
 
