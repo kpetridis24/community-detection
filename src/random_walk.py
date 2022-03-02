@@ -27,7 +27,7 @@ def clusters(G, steps, threshold_similarity):
         community = random_walk(steps, node, G)
         communities.append(community)
 
-    modules = tools.join_similar_communities(threshold_similarity, communities, G)
+    modules = tools.join_similar_communities(threshold_similarity, communities)
     index1, index2 = tools.similar_clusters(threshold_similarity, modules)
 
     while index1 != -1:
@@ -39,9 +39,9 @@ def clusters(G, steps, threshold_similarity):
 
 
 def main():
-    steps = 15
+    steps = 40
     threshold_similarity = 0.1
-    G = reader.create_graph('../graphs/g1.csv', True)
+    G = reader.create_graph('../graphs/soc-sign-bitcoinalpha.csv', True)
     # G = nx.karate_club_graph()
 
     start = time.time()

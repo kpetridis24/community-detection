@@ -37,7 +37,7 @@ def clusters(G, steps, window, tolerance, threshold_similarity):
         community = restrained_walk(steps, window, tolerance, node, G)
         communities.append(community)
 
-    modules = tools.join_similar_communities(threshold_similarity, communities, G)
+    modules = tools.join_similar_communities(threshold_similarity, communities)
     index1, index2 = tools.similar_clusters(threshold_similarity, modules)
 
     while index1 != -1:
@@ -53,7 +53,8 @@ def main():
     window = 6
     tolerance = 5
     threshold_similarity = 0.1
-    G = reader.create_graph('../graphs/g1.csv', True)
+    G = reader.create_graph('../graphs/soc-sign-bitcoinalpha.csv', True)
+    # G = nx.karate_club_graph()
 
     start = time.time()
     modules = clusters(G, steps, window, tolerance, threshold_similarity)
