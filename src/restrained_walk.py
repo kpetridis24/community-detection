@@ -11,6 +11,10 @@ import time
 seed(datetime.now())
 
 
+"""
+ Given a graph G, detects the communities present inside it. It joins communities until the desired similarity
+ between them has been reached.
+"""
 def clusters(G, steps, window, tolerance, threshold_similarity):
     communities = list()
     for node in G.nodes:
@@ -30,7 +34,7 @@ def clusters(G, steps, window, tolerance, threshold_similarity):
 
 
 def main():
-    steps = 10
+    steps = 50
     window = 6
     tolerance = 5
     threshold_similarity = 0.1

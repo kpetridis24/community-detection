@@ -11,6 +11,10 @@ import time
 seed(datetime.now())
 
 
+"""
+ Given a graph G, detects the communities present inside it. It joins communities until the desired similarity
+ between them has been reached.
+"""
 def clusters(G, steps, threshold_similarity):
     communities = list()
     for edge in G.edges:
@@ -31,7 +35,7 @@ def clusters(G, steps, threshold_similarity):
 
 def main():
     steps = 20
-    threshold_similarity = 0.15
+    threshold_similarity = 0.1
     G = reader.create_graph('../graphs/soc-sign-bitcoinalpha.csv', True)
     # G = nx.karate_club_graph()
 
