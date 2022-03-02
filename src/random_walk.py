@@ -30,6 +30,21 @@ def similar_clusters(threshold_similarity, modules):
     return -1, -1
 
 
+def join(community_index1, community_index2, community1, community2, cluster_of, modules):
+    if cluster_of[community_index1] == -1 and cluster_of[community_index2] == -1:
+        new_module = community1.union(community2)
+        modules.append(new_module)
+        cluster_of[community_index1] = len(modules) - 1
+        cluster_of[community_index2] = len(modules) - 1
+    elif cluster_of[community_index1] != -1:
+        modules[cluster_of[community_index1]].update(community2)
+        cluster_of[community_index2] = cluster_of[community_index1]
+    else:
+        modules[cluster_of[community_index2]].update(community1)
+        cluster_of[community_index1] = cluster_of[community_index2]
+    return modules, cluster_of
+
+
 def join_similar_communities(threshold_similarity, communities, G):
     cluster_of = [-1 for _ in range(len(communities))]
     modules = list(set())
@@ -39,20 +54,10 @@ def join_similar_communities(threshold_similarity, communities, G):
         community_index2 = 0
         for community2 in communities:
             if community_index1 < community_index2:
-                score = tools.jaccard_similarity(community1, community2)
-                if score >= threshold_similarity:
-                    if cluster_of[community_index1] == -1 and cluster_of[community_index2] == -1:
-                        new_module = community1.union(community2)
-                        modules.append(new_module)
-                        cluster_of[community_index1] = len(modules) - 1
-                        cluster_of[community_index2] = len(modules) - 1
-                        continue
-                    elif cluster_of[community_index1] != -1:
-                        modules[cluster_of[community_index1]].update(community2)
-                        cluster_of[community_index2] = cluster_of[community_index1]
-                    else:
-                        modules[cluster_of[community_index2]].update(community1)
-                        cluster_of[community_index1] = cluster_of[community_index2]
+                similarity = tools.jaccard_similarity(community1, community2)
+                if similarity >= threshold_similarity:
+                    modules, cluster_of = join(community_index1, community_index2,
+                                               community1, community2, cluster_of, modules)
             community_index2 += 1
         community_index1 += 1
 
@@ -81,7 +86,7 @@ def clusters(G, steps, threshold_similarity):
 
 
 def main():
-    steps = 10
+    steps = 50
     threshold_similarity = 0.1
     G = reader.create_graph('../graphs/g1.csv', True)
     # G = nx.karate_club_graph()
