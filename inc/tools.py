@@ -29,11 +29,18 @@ def calculate_similarity(set1, set2):
 
 def check_clusters(target_node1, target_node2, modules):
     module_index = 0
+    # print(target_node1)
+    # print(target_node2)
+    # print(modules)
     for module in modules:
         if target_node1 in module or target_node2 in module:
-            return module_index
+            for k in range(len(modules)):
+                if k != module_index:
+                    if target_node1 in modules[k] or target_node2 in modules[k]:
+                        return True, module_index, k
+            return False, module_index, 0
         module_index += 1
-    return -1
+    return False, -1, 0
 
 
 def check_edge_clusters(target_edge1, target_edge2, modules):
@@ -53,13 +60,41 @@ def join_node_clusters(desired_similarity, clusters, G):
     for i in G.nodes:
         for j in G.nodes:
             if i < j:
+                # join, cluster, cluster2 = check_clusters(i, j, joined_clusters)
+                # if cluster != -1:
+                #     joined_clusters[cluster].add(j)
+                #     joined_clusters[cluster].add(i)
                 score = jaccard_similarity(clusters[i], clusters[j])
                 if score >= desired_similarity:
-                    cluster = check_clusters(i, j, joined_clusters)
+                    join, cluster, cluster2 = check_clusters(i, j, joined_clusters)
+                    if join:
+                        print('now')
+                        for value in joined_clusters[cluster2]:
+                            joined_clusters[cluster].add(value)
+                        # joined_clusters[cluster].add(joined_clusters[cluster2])
+                        joined_clusters.pop(cluster2)
+                        continue
+                    print('cluster=', cluster)
+                    print('size=', len(joined_clusters))
                     if cluster == -1:
                         joined_clusters.append({i, j})
                         continue
                     joined_clusters[cluster].add(j)
+                    joined_clusters[cluster].add(i)
+                # else:
+                #     joined_clusters.append(clusters[i])
+                #     joined_clusters.append(clusters[j])
+    # i = 0
+    # while True:
+    #     for j in
+
+    # for cluster1 in range(len(joined_clusters)):
+    #     for cluster2 in range(len(joined_clusters)):
+    #         if cluster1 < cluster2:
+    #             if joined_clusters[cluster1].intersection(joined_clusters[cluster2]) > 0:
+
+
+    # print(joined_clusters)
     return joined_clusters
 
 
