@@ -1,37 +1,20 @@
 """
 Large graph clustering using link-node-link walkers
 """
-import random
-import time
+import networkx as nx
 import inc.reader as reader
 import inc.tools as tools
-import networkx as nx
+import inc.walks as walks
 from random import seed
 from datetime import datetime
+import time
 seed(datetime.now())
-
-
-def link_node_link_walk(steps, edge, G):
-    community = set()
-    for _ in range(steps):
-        node = random.choice([edge[0], edge[1]])
-        neighborhood = set(G.edges(node))
-        if node == edge[0]:
-            neighborhood.remove(edge)
-        else:
-            neighborhood.remove((edge[1], edge[0]))
-        neighborhood = list(neighborhood)
-        if not neighborhood:
-            return community
-        edge = random.choice(neighborhood)
-        community.add(edge)
-    return community
 
 
 def clusters(G, steps, threshold_similarity):
     communities = list()
     for edge in G.edges:
-        community = link_node_link_walk(steps, edge, G)
+        community = walks.link_node_link(steps, edge, G)
         if community:
             communities.append(community)
 

@@ -1,31 +1,22 @@
 """
 Large graph clustering using random walkers
 """
-import inc.reader as reader
 import networkx as nx
+import inc.reader as reader
 import inc.tools as tools
-import random
-import time
+import inc.walks as walks
 from random import seed
 from datetime import datetime
+import time
 seed(datetime.now())
-
-
-def random_walk(steps, vertex, G):
-    community = set()
-    for _ in range(steps):
-        neighborhood = list(G.edges(vertex))
-        new_edge = random.choice(neighborhood)
-        vertex = new_edge[1]
-        community.add(vertex)
-    return community
 
 
 def clusters(G, steps, threshold_similarity):
     communities = list()
     for node in G.nodes:
-        community = random_walk(steps, node, G)
-        communities.append(community)
+        community = walks.node_node(steps, node, G)
+        if community:
+            communities.append(community)
 
     modules = tools.join_similar_communities(threshold_similarity, communities)
     index1, index2 = tools.similar_clusters(threshold_similarity, modules)

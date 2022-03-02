@@ -1,41 +1,22 @@
 """
 Large graph clustering using restrained walkers
 """
-import random
-import time
+import networkx as nx
 import inc.reader as reader
 import inc.tools as tools
-import graphs as graphs
+import inc.walks as walks
 from random import seed
 from datetime import datetime
+import time
 seed(datetime.now())
-
-
-def restrained_walk(steps, window, tolerance, vertex, G):
-    community = set()
-    accessed_in_steps = [0 for _ in range(steps)]
-    accessed_nodes = set()
-    for i in range(1, steps):
-        neighborhood = list(G.edges(vertex))
-        new_edge = random.choice(neighborhood)
-        vertex = new_edge[1]
-        if vertex not in accessed_in_steps:
-            accessed_in_steps[i] = accessed_in_steps[i - 1] + 1
-            accessed_nodes.add(vertex)
-        else:
-            accessed_in_steps[i] = accessed_in_steps[i - 1]
-        if i >= window:
-            if accessed_in_steps[i] - accessed_in_steps[i - window] <= tolerance:
-                break
-        community.add(vertex)
-    return community
 
 
 def clusters(G, steps, window, tolerance, threshold_similarity):
     communities = list()
     for node in G.nodes:
-        community = restrained_walk(steps, window, tolerance, node, G)
-        communities.append(community)
+        community = walks.node_node_restrained(steps, window, tolerance, node, G)
+        if community:
+            communities.append(community)
 
     modules = tools.join_similar_communities(threshold_similarity, communities)
     index1, index2 = tools.similar_clusters(threshold_similarity, modules)
