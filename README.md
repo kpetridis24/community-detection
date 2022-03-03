@@ -7,4 +7,14 @@ walkers in order to optimize the modularity of each cluster, based on its defini
 
 **Random walkers**
 
-The first method uses random walkers to access a set of vertices, during a m-step walk, starting from an initial vertex. At step k, the walker is located in vertex v_k
+The first method uses random walkers to access a set of vertices, during a m-step walk, starting from an initial vertex. At step k, the walker is located in vertex v(k)
+and arbitrarily picks one of its neighbors as the next vertex. Each possible choice has the probability of 1/d(k), where d(k) is the degree of vertex v(k).
+
+
+**Restrained walkers**
+
+The second method emerges from an observation on method-1. Each walk can be divided in three separate stages. During the first stage, almost every node the walker accesses,
+hasn't already been accessed, which both makes theoretical sense and agrees with the practical analysis and testing. The second stage is when most of the nodes inside the
+initial community have been accessed, so now the walker re-iterates over the same set of nodes for a second time. Eventually, the walker starts moving towards a different 
+community, during the third and final stage. After producing a mathematical representation of the above mentioned behavior, we are able to terminate each walk, before entering
+the third stage, entraping it inside the two initial stages, which is optimal for the clustering effect.
